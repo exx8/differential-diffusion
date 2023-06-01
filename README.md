@@ -1,3 +1,3 @@
 # Differential Diffusion
 
-The Code Will Be Avilable Soon! 🚧
+The code will be available soon! 🚧
