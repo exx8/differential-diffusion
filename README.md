@@ -12,3 +12,16 @@ The code will be available soon! 🚧🏗️
 
 ![image](https://github.com/exx8/differential-diffusion/assets/8540180/8e194341-f623-4610-afee-b590e2b64c12)
 
+
+# Citation
+If you find this useful for your research, please cite the following:
+```bibtex
+@misc{levin2023differential,
+      title={Differential Diffusion: Giving Each Pixel Its Strength}, 
+      author={Eran Levin and Ohad Fried},
+      year={2023},
+      eprint={2306.00950},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
