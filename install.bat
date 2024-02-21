@@ -18,7 +18,7 @@ python -m pip install --upgrade pip
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 REM Install other requirements
-pip install -r requirements_test.txt
+pip install -r requirements.txt
 
 echo Installation completed.
 pause
