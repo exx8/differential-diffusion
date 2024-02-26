@@ -15,7 +15,7 @@ call venv\Scripts\activate.bat
 REM Upgrade pip before `pip install`
 python -m pip install --upgrade pip
 
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 REM Install other requirements
 pip install -r requirements.txt
