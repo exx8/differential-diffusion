@@ -15,7 +15,7 @@ fi
 python -m pip install --upgrade pip
 
 # Install the custom diffusers version from GitHub
-./venv/bin/pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+./venv/bin/pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 # Install other requirements
 ./venv/bin/pip install -r requirements.txt
