@@ -58,31 +58,14 @@ class ImageEditBlock:
             triggers=[
                 self.brightness_slider.release,
                 self.contrast_slider.release,
-            ],
-            inputs=[
-                input_image,
-                self.brightness_slider,
-                self.contrast_slider,
-            ],
-            outputs=output_image,
-            show_progress="hidden",
-        )
-        def image_enhancement_change(
-            image: pil_image, brightness: float, contrast: float
-        ) -> pil_image:
-            image = Brightness(image).enhance(brightness)
-            image = Contrast(image).enhance(contrast)
-
-            return image
-
-        @on(
-            triggers=[
                 self.flip_horizontal_checkbox.select,
                 self.to_vertical_checkbox.select,
                 self.flip_vertical_checkbox.select,
             ],
             inputs=[
                 input_image,
+                self.brightness_slider,
+                self.contrast_slider,
                 self.flip_horizontal_checkbox,
                 self.to_vertical_checkbox,
                 self.flip_vertical_checkbox,
@@ -90,21 +73,24 @@ class ImageEditBlock:
             outputs=output_image,
             show_progress="hidden",
         )
-        def image_transform_change(
+        def image_edit_change(
             image: pil_image,
+            brightness: float,
+            contrast: float,
             is_flip_horizontal: bool,
             is_to_vertical: bool,
             is_flip_vertical: bool,
         ) -> pil_image:
-            is_vertical_operation = not is_flip_horizontal
+            image = Brightness(image).enhance(brightness)
+            image = Contrast(image).enhance(contrast)
 
-            if is_vertical_operation:
-                if is_to_vertical:
-                    image = image.transpose(Transpose.ROTATE_90)
-
-                if is_flip_vertical:
-                    image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
-            else:
+            if is_flip_horizontal:
                 image = image.transpose(Transpose.FLIP_LEFT_RIGHT)
+
+            if is_to_vertical:
+                image = image.transpose(Transpose.ROTATE_90)
+
+            if is_flip_vertical:
+                image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
 
             return image

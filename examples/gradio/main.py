@@ -1,6 +1,6 @@
 from gradio import Blocks, Tab, Row, Column, Image
 
-from utilities.event_funcs import gradient_calculate, image_enhancement_change
+from utilities.event_funcs import gradient_calculate, image_edit_change
 
 from tabs.gradient_tab import GradientTab
 from tabs.image_mask_tab import ImageMaskTab
@@ -52,11 +52,28 @@ with Blocks() as example:
     )
 
     tab_image_mask.select(
-        image_enhancement_change,
+        image_edit_change,
         inputs=[
             image_mask_tab.mask_image,
             image_mask_tab.image_edit.brightness_slider,
             image_mask_tab.image_edit.contrast_slider,
+            image_mask_tab.image_edit.flip_horizontal_checkbox,
+            image_mask_tab.image_edit.to_vertical_checkbox,
+            image_mask_tab.image_edit.flip_vertical_checkbox,
+        ],
+        outputs=mask_image,
+        show_progress="hidden",
+    )
+
+    tab_extracted_depth.select(
+        image_edit_change,
+        inputs=[
+            extract_depth_tab.extracted_depth_image,
+            extract_depth_tab.image_edit.brightness_slider,
+            extract_depth_tab.image_edit.contrast_slider,
+            extract_depth_tab.image_edit.flip_horizontal_checkbox,
+            extract_depth_tab.image_edit.to_vertical_checkbox,
+            extract_depth_tab.image_edit.flip_vertical_checkbox,
         ],
         outputs=mask_image,
         show_progress="hidden",

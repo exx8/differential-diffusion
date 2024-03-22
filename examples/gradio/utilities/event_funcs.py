@@ -1,7 +1,6 @@
 from PIL.Image import Image as pil_image
-from PIL.Image import Transpose, TRANSVERSE
+from PIL.Image import Transpose
 from PIL.ImageEnhance import Brightness, Contrast
-from gradio import Column
 
 from .gradient import create_gradient
 
@@ -33,6 +32,22 @@ def image_transform_change(
     return image
 
 
+def image_edit_change(
+    image: pil_image,
+    brightness: float,
+    contrast: float,
+    is_flip_horizontal: bool,
+    is_to_vertical: bool,
+    is_flip_vertical: bool,
+) -> pil_image:
+    image = image_enhancement_change(image, brightness, contrast)
+    image = image_transform_change(
+        image, is_flip_horizontal, is_to_vertical, is_flip_vertical
+    )
+
+    return image
+
+
 def gradient_calculate(
     image_width: int,
     image_height: int,
@@ -50,11 +65,3 @@ def gradient_calculate(
     )
 
     return image
-
-
-def image_upload_change():
-    return Column(visible=False)
-
-
-def image_clear_change():
-    return Column(visible=True)
