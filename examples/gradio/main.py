@@ -1,17 +1,18 @@
 from gradio import Blocks, Tab, Row, Column, Image, Slider, Checkbox
 from utilities.gradient import (
-    create_gradient,
-    gradient_flip_horizontal,
-    gradient_flip_vertical,
-    gradient_rotate_to_vertical,
+    gradient_calculate,
+    image_enhancement_change,
+    image_transform_change,
 )
 
 with Blocks() as example:
-    with Row() as example_main_row:
+    with Row() as main_row:
         with Tab("Gradient"):
-            with Column() as example_gradient_row:
+            with Column() as gradient_main_column:
                 gradient_image = Image(
-                    value=create_gradient(512, 512, 1.0),
+                    value=gradient_calculate(
+                        512, 512, 1.0, 1.0, 1.0, False, False, False
+                    ),
                     image_mode="L",
                     type="pil",
                     label="Gradient Mask",
@@ -19,7 +20,7 @@ with Blocks() as example:
                     interactive=True,
                 )
 
-                with Column() as example_gradient_column:
+                with Column() as gradient_creation_column:
                     gradient_width_slider = Slider(
                         minimum=512,
                         maximum=4096,
@@ -47,7 +48,8 @@ with Blocks() as example:
                         interactive=True,
                     )
 
-                    gradient_brightness_slider = Slider(
+                with Column() as image_enhancement_column:
+                    image_brightness_slider = Slider(
                         minimum=0.0,
                         maximum=10.0,
                         value=1.0,
@@ -56,7 +58,7 @@ with Blocks() as example:
                         interactive=True,
                     )
 
-                    gradient_contrast_slider = Slider(
+                    image_contrast_slider = Slider(
                         minimum=0.0,
                         maximum=10.0,
                         value=1.0,
@@ -65,123 +67,130 @@ with Blocks() as example:
                         interactive=True,
                     )
 
-                    with Row():
-                        gradient_flip_horizontal_checkbox = Checkbox(
-                            value=False, label="Flip Horizontal", interactive=True
-                        )
+                with Row() as image_transformation_row:
+                    image_flip_horizontal_checkbox = Checkbox(
+                        value=False, label="Flip Horizontal", interactive=True
+                    )
 
-                        gradient_to_vertical_checkbox = Checkbox(
-                            value=False, label="To Vertical", interactive=True
-                        )
+                    image_to_vertical_checkbox = Checkbox(
+                        value=False, label="To Vertical", interactive=True
+                    )
 
-                        gradient_flip_vertical_checkbox = Checkbox(
-                            value=False, label="Flip Vertical", interactive=True
-                        )
+                    image_flip_vertical_checkbox = Checkbox(
+                        value=False, label="Flip Vertical", interactive=True
+                    )
 
-        output_image = Image(sources=None)
+        with Column():
+            mask_image = Image(sources=None, label="Mask Image")
+            output_image = Image(sources=None, label="Output Image")
 
     """
     Gradient Values Event Functions
     """
 
     gradient_width_slider.release(
-        create_gradient,
+        gradient_calculate,
         inputs=[
             gradient_width_slider,
             gradient_height_slider,
             gradient_strength_slider,
-            gradient_brightness_slider,
-            gradient_contrast_slider,
-            gradient_flip_horizontal_checkbox,
-            gradient_to_vertical_checkbox,
-            gradient_flip_vertical_checkbox,
+            image_brightness_slider,
+            image_contrast_slider,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
         ],
-        outputs=gradient_image,
+        outputs=mask_image,
         show_progress="hidden",
     )
 
     gradient_height_slider.release(
-        create_gradient,
+        gradient_calculate,
         inputs=[
             gradient_width_slider,
             gradient_height_slider,
             gradient_strength_slider,
-            gradient_brightness_slider,
-            gradient_contrast_slider,
-            gradient_flip_horizontal_checkbox,
-            gradient_to_vertical_checkbox,
-            gradient_flip_vertical_checkbox,
+            image_brightness_slider,
+            image_contrast_slider,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
         ],
-        outputs=gradient_image,
+        outputs=mask_image,
         show_progress="hidden",
     )
 
     gradient_strength_slider.release(
-        create_gradient,
+        gradient_calculate,
         inputs=[
             gradient_width_slider,
             gradient_height_slider,
             gradient_strength_slider,
-            gradient_brightness_slider,
-            gradient_contrast_slider,
-            gradient_flip_horizontal_checkbox,
-            gradient_to_vertical_checkbox,
-            gradient_flip_vertical_checkbox,
+            image_brightness_slider,
+            image_contrast_slider,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
         ],
-        outputs=gradient_image,
+        outputs=mask_image,
         show_progress="hidden",
     )
 
-    gradient_brightness_slider.release(
-        create_gradient,
+    image_brightness_slider.release(
+        image_enhancement_change,
         inputs=[
-            gradient_width_slider,
-            gradient_height_slider,
-            gradient_strength_slider,
-            gradient_brightness_slider,
-            gradient_contrast_slider,
-            gradient_flip_horizontal_checkbox,
-            gradient_to_vertical_checkbox,
-            gradient_flip_vertical_checkbox,
+            gradient_image,
+            image_brightness_slider,
+            image_contrast_slider,
         ],
-        outputs=gradient_image,
+        outputs=mask_image,
         show_progress="hidden",
     )
 
-    gradient_contrast_slider.release(
-        create_gradient,
+    image_contrast_slider.release(
+        image_enhancement_change,
         inputs=[
-            gradient_width_slider,
-            gradient_height_slider,
-            gradient_strength_slider,
-            gradient_brightness_slider,
-            gradient_contrast_slider,
-            gradient_flip_horizontal_checkbox,
-            gradient_to_vertical_checkbox,
-            gradient_flip_vertical_checkbox,
+            gradient_image,
+            image_brightness_slider,
+            image_contrast_slider,
         ],
-        outputs=gradient_image,
+        outputs=mask_image,
         show_progress="hidden",
     )
 
-    gradient_flip_horizontal_checkbox.select(
-        gradient_flip_horizontal,
-        inputs=gradient_image,
-        outputs=gradient_image,
+    image_flip_horizontal_checkbox.select(
+        image_transform_change,
+        inputs=[
+            gradient_image,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
+        ],
+        outputs=mask_image,
         show_progress=False,
     )
 
-    gradient_to_vertical_checkbox.select(
-        gradient_rotate_to_vertical,
-        inputs=[gradient_image, gradient_to_vertical_checkbox],
-        outputs=gradient_image,
+    image_to_vertical_checkbox.select(
+        image_transform_change,
+        inputs=[
+            gradient_image,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
+        ],
+        outputs=mask_image,
         show_progress="hidden",
     )
 
-    gradient_flip_vertical_checkbox.select(
-        gradient_flip_vertical,
-        inputs=gradient_image,
-        outputs=gradient_image,
+    image_flip_vertical_checkbox.select(
+        image_transform_change,
+        inputs=[
+            gradient_image,
+            image_flip_horizontal_checkbox,
+            image_to_vertical_checkbox,
+            image_flip_vertical_checkbox,
+        ],
+        outputs=mask_image,
         show_progress="hidden",
     )
 
