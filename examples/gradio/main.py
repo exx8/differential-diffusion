@@ -1,95 +1,54 @@
-from gradio import Blocks, Tab, Row, Column, Image, Slider, Checkbox, on
-from utilities.gradient import create_gradient
-from PIL.Image import Image as pil_image
-from PIL.Image import Transpose, TRANSVERSE
-from PIL.ImageEnhance import Brightness, Contrast
-from utilities.event_funcs import image_enhancement_change
+from gradio import Blocks, Tab, Row, Column, Image
 
-
-def image_transform_change(
-    image: pil_image,
-    is_flip_horizontal: bool,
-    is_to_vertical: bool,
-    is_flip_vertical: bool,
-) -> pil_image:
-    is_vertical_operation = not is_flip_horizontal
-
-    if is_vertical_operation:
-        if is_to_vertical:
-            image = image.transpose(Transpose.ROTATE_90)
-
-        if is_flip_vertical:
-            image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
-    else:
-        image = image.transpose(Transpose.FLIP_LEFT_RIGHT)
-
-    return image
-
+from utilities.event_funcs import gradient_calculate, image_enhancement_change
 
 from tabs.gradient_tab import GradientTab
+from tabs.image_mask_tab import ImageMaskTab
 
 gradient_tab = GradientTab()
+image_mask_tab = ImageMaskTab()
 
 with Blocks() as example:
     with Row() as main_row:
-        with Tab("Gradient Mask"):
+        with Tab("Gradient Mask") as tab_gradient:
             gradient_tab.render()
 
-        with Tab("Image Mask"):
-            with Column() as uploaded_image_main_column:
-                uploaded_mask_image = Image(
-                    image_mode="L",
-                    sources=["upload", "clipboard"],
-                    type="pil",
-                    label="Image Mask",
-                    interactive=True,
-                )
-
-            with Column() as uploaded_image_enhancement_column:
-                uploaded_image_brightness_slider = Slider(
-                    minimum=0.0,
-                    maximum=10.0,
-                    value=1.0,
-                    step=0.5,
-                    label="Image Brightness",
-                    interactive=True,
-                )
-
-                uploaded_image_contrast_slider = Slider(
-                    minimum=0.0,
-                    maximum=10.0,
-                    value=1.0,
-                    step=0.5,
-                    label="Image Contrast",
-                    interactive=True,
-                )
-
-            with Row() as uploaded_image_transformation_row:
-                uploaded_image_flip_horizontal_checkbox = Checkbox(
-                    value=False, label="Flip Horizontal", interactive=True
-                )
-
-                uploaded_image_to_vertical_checkbox = Checkbox(
-                    value=False, label="To Vertical", interactive=True
-                )
-
-                uploaded_image_flip_vertical_checkbox = Checkbox(
-                    value=False, label="Flip Vertical", interactive=True
-                )
+        with Tab("Image Mask") as tab_image_mask:
+            image_mask_tab.render()
 
         with Column():
             mask_image = Image(sources=None, label="Mask Image")
             output_image = Image(sources=None, label="Output Image")
 
-    """
-    Gradient Event Functions
-    """
+    tab_gradient.select(
+        gradient_calculate,
+        inputs=[
+            gradient_tab.width_slider,
+            gradient_tab.height_slider,
+            gradient_tab.strength_slider,
+            gradient_tab.image_edit.brightness_slider,
+            gradient_tab.image_edit.contrast_slider,
+            gradient_tab.image_edit.flip_horizontal_checkbox,
+            gradient_tab.image_edit.to_vertical_checkbox,
+            gradient_tab.image_edit.flip_vertical_checkbox,
+        ],
+        outputs=mask_image,
+        show_progress="hidden",
+    )
+
+    tab_image_mask.select(
+        image_enhancement_change,
+        inputs=[
+            image_mask_tab.mask_image,
+            image_mask_tab.image_edit.brightness_slider,
+            image_mask_tab.image_edit.contrast_slider,
+        ],
+        outputs=mask_image,
+        show_progress="hidden",
+    )
 
     gradient_tab.attach_event(mask_image)
-
-    """
-    Uploaded Image Event Functions
-    """
+    image_mask_tab.attach_event(mask_image)
 
 if __name__ == "__main__":
     example.launch()

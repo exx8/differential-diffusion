@@ -21,15 +21,13 @@ def image_transform_change(
     is_to_vertical: bool,
     is_flip_vertical: bool,
 ) -> pil_image:
-    is_vertical_operation = not is_flip_horizontal
+    if is_to_vertical:
+        image = image.transpose(Transpose.ROTATE_90)
 
-    if is_vertical_operation:
-        if is_to_vertical:
-            image = image.transpose(Transpose.ROTATE_90)
+    if is_flip_vertical:
+        image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
 
-        if is_flip_vertical:
-            image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
-    else:
+    if is_flip_horizontal:
         image = image.transpose(Transpose.FLIP_LEFT_RIGHT)
 
     return image
