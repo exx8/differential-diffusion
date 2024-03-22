@@ -1,15 +1,13 @@
 from gradio import Column, Image
-
 from PIL import Image as pil_image
-
 from .image_edit_block import ImageEditBlock
-
-from os.path import join
 
 
 class ImageMaskTab:
     def __init__(self) -> None:
         self.main_column = Column()
+
+        from os.path import join
 
         self.mask_image = Image(
             value=pil_image.open(join("assets", "map2.jpg")),

@@ -20,6 +20,8 @@ class GradientTab:
             type="pil",
             label="Gradient Mask",
             interactive=False,
+            width=256,
+            height=256,
         )
         self.creation_column.add(self.default_image)
 
