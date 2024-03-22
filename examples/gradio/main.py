@@ -1,198 +1,95 @@
-from gradio import Blocks, Tab, Row, Column, Image, Slider, Checkbox
-from utilities.gradient import (
-    gradient_calculate,
-    image_enhancement_change,
-    image_transform_change,
-)
+from gradio import Blocks, Tab, Row, Column, Image, Slider, Checkbox, on
+from utilities.gradient import create_gradient
+from PIL.Image import Image as pil_image
+from PIL.Image import Transpose, TRANSVERSE
+from PIL.ImageEnhance import Brightness, Contrast
+from utilities.event_funcs import image_enhancement_change
+
+
+def image_transform_change(
+    image: pil_image,
+    is_flip_horizontal: bool,
+    is_to_vertical: bool,
+    is_flip_vertical: bool,
+) -> pil_image:
+    is_vertical_operation = not is_flip_horizontal
+
+    if is_vertical_operation:
+        if is_to_vertical:
+            image = image.transpose(Transpose.ROTATE_90)
+
+        if is_flip_vertical:
+            image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
+    else:
+        image = image.transpose(Transpose.FLIP_LEFT_RIGHT)
+
+    return image
+
+
+from tabs.gradient_tab import GradientTab
+
+gradient_tab = GradientTab()
 
 with Blocks() as example:
     with Row() as main_row:
-        with Tab("Gradient"):
-            with Column() as gradient_main_column:
-                gradient_image = Image(
-                    value=gradient_calculate(
-                        512, 512, 1.0, 1.0, 1.0, False, False, False
-                    ),
+        with Tab("Gradient Mask"):
+            gradient_tab.render()
+
+        with Tab("Image Mask"):
+            with Column() as uploaded_image_main_column:
+                uploaded_mask_image = Image(
                     image_mode="L",
-                    type="pil",
-                    label="Gradient Mask",
                     sources=["upload", "clipboard"],
+                    type="pil",
+                    label="Image Mask",
                     interactive=True,
                 )
 
-                with Column() as gradient_creation_column:
-                    gradient_width_slider = Slider(
-                        minimum=512,
-                        maximum=4096,
-                        value=512,
-                        step=1,
-                        label="Gradient Image Width",
-                        interactive=True,
-                    )
+            with Column() as uploaded_image_enhancement_column:
+                uploaded_image_brightness_slider = Slider(
+                    minimum=0.0,
+                    maximum=10.0,
+                    value=1.0,
+                    step=0.5,
+                    label="Image Brightness",
+                    interactive=True,
+                )
 
-                    gradient_height_slider = Slider(
-                        minimum=512,
-                        maximum=4096,
-                        value=512,
-                        step=1,
-                        label="Gradient Image Height",
-                        interactive=True,
-                    )
+                uploaded_image_contrast_slider = Slider(
+                    minimum=0.0,
+                    maximum=10.0,
+                    value=1.0,
+                    step=0.5,
+                    label="Image Contrast",
+                    interactive=True,
+                )
 
-                    gradient_strength_slider = Slider(
-                        minimum=0,
-                        maximum=20,
-                        value=1,
-                        step=0.5,
-                        label="Gradient Strength",
-                        interactive=True,
-                    )
+            with Row() as uploaded_image_transformation_row:
+                uploaded_image_flip_horizontal_checkbox = Checkbox(
+                    value=False, label="Flip Horizontal", interactive=True
+                )
 
-                with Column() as image_enhancement_column:
-                    image_brightness_slider = Slider(
-                        minimum=0.0,
-                        maximum=10.0,
-                        value=1.0,
-                        step=0.5,
-                        label="Gradient Brightness",
-                        interactive=True,
-                    )
+                uploaded_image_to_vertical_checkbox = Checkbox(
+                    value=False, label="To Vertical", interactive=True
+                )
 
-                    image_contrast_slider = Slider(
-                        minimum=0.0,
-                        maximum=10.0,
-                        value=1.0,
-                        step=0.5,
-                        label="Gradient Contrast",
-                        interactive=True,
-                    )
-
-                with Row() as image_transformation_row:
-                    image_flip_horizontal_checkbox = Checkbox(
-                        value=False, label="Flip Horizontal", interactive=True
-                    )
-
-                    image_to_vertical_checkbox = Checkbox(
-                        value=False, label="To Vertical", interactive=True
-                    )
-
-                    image_flip_vertical_checkbox = Checkbox(
-                        value=False, label="Flip Vertical", interactive=True
-                    )
+                uploaded_image_flip_vertical_checkbox = Checkbox(
+                    value=False, label="Flip Vertical", interactive=True
+                )
 
         with Column():
             mask_image = Image(sources=None, label="Mask Image")
             output_image = Image(sources=None, label="Output Image")
 
     """
-    Gradient Values Event Functions
+    Gradient Event Functions
     """
 
-    gradient_width_slider.release(
-        gradient_calculate,
-        inputs=[
-            gradient_width_slider,
-            gradient_height_slider,
-            gradient_strength_slider,
-            image_brightness_slider,
-            image_contrast_slider,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
+    gradient_tab.attach_event(mask_image)
 
-    gradient_height_slider.release(
-        gradient_calculate,
-        inputs=[
-            gradient_width_slider,
-            gradient_height_slider,
-            gradient_strength_slider,
-            image_brightness_slider,
-            image_contrast_slider,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
-
-    gradient_strength_slider.release(
-        gradient_calculate,
-        inputs=[
-            gradient_width_slider,
-            gradient_height_slider,
-            gradient_strength_slider,
-            image_brightness_slider,
-            image_contrast_slider,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
-
-    image_brightness_slider.release(
-        image_enhancement_change,
-        inputs=[
-            gradient_image,
-            image_brightness_slider,
-            image_contrast_slider,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
-
-    image_contrast_slider.release(
-        image_enhancement_change,
-        inputs=[
-            gradient_image,
-            image_brightness_slider,
-            image_contrast_slider,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
-
-    image_flip_horizontal_checkbox.select(
-        image_transform_change,
-        inputs=[
-            gradient_image,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress=False,
-    )
-
-    image_to_vertical_checkbox.select(
-        image_transform_change,
-        inputs=[
-            gradient_image,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
-
-    image_flip_vertical_checkbox.select(
-        image_transform_change,
-        inputs=[
-            gradient_image,
-            image_flip_horizontal_checkbox,
-            image_to_vertical_checkbox,
-            image_flip_vertical_checkbox,
-        ],
-        outputs=mask_image,
-        show_progress="hidden",
-    )
+    """
+    Uploaded Image Event Functions
+    """
 
 if __name__ == "__main__":
     example.launch()
