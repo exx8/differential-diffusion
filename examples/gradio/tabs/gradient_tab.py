@@ -1,4 +1,4 @@
-from gradio import Column, Slider, Image, on
+from gradio import Slider, Image, on
 from PIL.Image import Image as pil_image
 
 from utilities.gradient import create_gradient
