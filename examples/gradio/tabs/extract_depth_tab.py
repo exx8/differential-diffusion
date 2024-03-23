@@ -20,7 +20,6 @@ class ExtractDepthTab:
             height=256,
             label="Input Image",
         )
-        self.images_row.add(self.wanted_image)
 
         self.extracted_depth_image = Image(
             width=256,
@@ -29,9 +28,6 @@ class ExtractDepthTab:
             label="Extracted Depth Image",
             sources=None,
         )
-        self.images_row.add(self.extracted_depth_image)
-
-        self.main_column.add(self.images_row)
 
         self.pipe = pipeline(
             "depth-estimation",
@@ -43,8 +39,11 @@ class ExtractDepthTab:
         self.image_edit = ImageEditBlock()
 
     def render(self) -> None:
-        self.wanted_image.render()
-        self.extracted_depth_image.render()
+        with self.images_row:
+            self.wanted_image.render()
+            self.extracted_depth_image.render()
+
+        self.images_row.render()
         self.image_edit.render()
 
     def attach_event(self, output_image) -> None:

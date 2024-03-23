@@ -9,8 +9,6 @@ from .image_edit_block import ImageEditBlock
 
 class GradientTab:
     def __init__(self) -> None:
-        self.creation_column = Column()
-
         from utilities.event_funcs import gradient_calculate
 
         self.default_image = Image(
@@ -23,7 +21,6 @@ class GradientTab:
             width=256,
             height=256,
         )
-        self.creation_column.add(self.default_image)
 
         self.width_slider = Slider(
             minimum=512,
@@ -33,7 +30,6 @@ class GradientTab:
             label="Gradient Image Width",
             interactive=True,
         )
-        self.creation_column.add(self.width_slider)
 
         self.height_slider = Slider(
             minimum=512,
@@ -43,7 +39,6 @@ class GradientTab:
             label="Gradient Image Height",
             interactive=True,
         )
-        self.creation_column.add(self.height_slider)
 
         self.strength_slider = Slider(
             minimum=0,
@@ -53,14 +48,8 @@ class GradientTab:
             label="Gradient Strength",
             interactive=True,
         )
-        self.creation_column.add(self.strength_slider)
 
         self.image_edit = ImageEditBlock()
-
-        self.main_component = Column()
-        self.main_component.add(self.creation_column)
-        self.main_component.add(self.image_edit.enhancement_column)
-        self.main_component.add(self.image_edit.image_transformation_row)
 
     def render(self) -> None:
         self.default_image.render()

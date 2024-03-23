@@ -1,5 +1,5 @@
 from gradio import Column, Textbox, Image, Button
-from utilities.diff_pipe import StableDiffusionDiffImg2ImgPipeline
+from utilities.SD2.diff_pipe import StableDiffusionDiffImg2ImgPipeline
 from torchvision import transforms
 from torch.cuda import is_available
 from PIL import Image as pil_image

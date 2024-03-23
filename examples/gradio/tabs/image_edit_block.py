@@ -17,7 +17,6 @@ class ImageEditBlock:
             label="Image Brightness",
             interactive=True,
         )
-        self.enhancement_column.add(self.brightness_slider)
 
         self.contrast_slider = Slider(
             minimum=0.0,
@@ -27,31 +26,33 @@ class ImageEditBlock:
             label="Image Contrast",
             interactive=True,
         )
-        self.enhancement_column.add(self.contrast_slider)
 
         self.image_transformation_row = Row()
 
         self.flip_horizontal_checkbox = Checkbox(
             value=False, label="Flip Horizontal", interactive=True
         )
-        self.image_transformation_row.add(self.flip_horizontal_checkbox)
 
         self.to_vertical_checkbox = Checkbox(
             value=False, label="To Vertical", interactive=True
         )
-        self.image_transformation_row.add(self.to_vertical_checkbox)
 
         self.flip_vertical_checkbox = Checkbox(
             value=False, label="Flip Vertical", interactive=True
         )
-        self.image_transformation_row.add(self.to_vertical_checkbox)
 
     def render(self) -> None:
-        self.brightness_slider.render()
-        self.contrast_slider.render()
-        self.flip_horizontal_checkbox.render()
-        self.to_vertical_checkbox.render()
-        self.flip_vertical_checkbox.render()
+        with self.enhancement_column:
+            self.brightness_slider.render()
+            self.contrast_slider.render()
+
+        with self.image_transformation_row:
+            self.flip_horizontal_checkbox.render()
+            self.to_vertical_checkbox.render()
+            self.flip_vertical_checkbox.render()
+
+        self.enhancement_column.render()
+        self.image_transformation_row.render()
 
     def attach_event(self, input_image, output_image) -> None:
         @on(
