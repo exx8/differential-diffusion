@@ -26,14 +26,16 @@ with Blocks() as example:
         with Tab("Generate") as tab_generate:
             generate_tab.render()
 
-        with Column():
+        with Row():
             mask_image = Image(
                 sources=None,
                 label="Mask Image",
                 width=512,
                 height=512,
             )
-            output_image = Image(sources=None, label="Output Image")
+            output_image = Image(
+                sources=None, label="Output Image", width=512, height=512
+            )
 
     tab_gradient.select(
         gradient_calculate,

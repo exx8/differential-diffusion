@@ -67,6 +67,11 @@ class GradientTab:
                 self.width_slider.release,
                 self.height_slider.release,
                 self.strength_slider.release,
+                self.image_edit.brightness_slider.release,
+                self.image_edit.contrast_slider.release,
+                self.image_edit.flip_horizontal_checkbox.select,
+                self.image_edit.to_vertical_checkbox.select,
+                self.image_edit.flip_vertical_checkbox.select,
             ],
             inputs=[
                 self.width_slider,
@@ -98,5 +103,3 @@ class GradientTab:
             )
 
             return image
-
-        self.image_edit.attach_event(self.default_image, output_image)

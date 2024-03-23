@@ -59,9 +59,13 @@ def gradient_calculate(
     is_flip_vertical: bool,
 ) -> pil_image:
     image = create_gradient(image_width, image_height, strength)
-    image = image_enhancement_change(image, brightness, contrast)
-    image = image_transform_change(
-        image, is_flip_horizontal, is_to_vertical, is_flip_vertical
+    image = image_edit_change(
+        image,
+        brightness,
+        contrast,
+        is_flip_horizontal,
+        is_to_vertical,
+        is_flip_vertical,
     )
 
     return image

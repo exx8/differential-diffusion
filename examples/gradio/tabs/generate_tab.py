@@ -1,4 +1,4 @@
-from gradio import Column, Textbox, Image, Button
+from gradio import Column, Row, Textbox, Image, Button, Slider
 from utilities.SD2.diff_pipe import StableDiffusionDiffImg2ImgPipeline
 from torchvision import transforms
 from torch.cuda import is_available
@@ -29,7 +29,8 @@ def preprocess_map(map):
 
 class GenerateTab:
     def __init__(self) -> None:
-        self.main_column = Column()
+        self.config_row = Row()
+        self.parameter_column = Column()
 
         from os.path import join
 
@@ -41,24 +42,42 @@ class GenerateTab:
             sources=["upload", "clipboard"],
             interactive=True,
         )
-        self.main_column.add(self.input_image)
+
+        self.guidance_scale_slider = Slider(
+            minimum=0,
+            maximum=20,
+            value=7,
+            label="Guidance Scale",
+            step=0.5,
+            interactive=True,
+        )
+
+        self.number_of_steps_slider = Slider(
+            minimum=0,
+            maximum=200,
+            step=1,
+            value=100,
+            label="Inference Step",
+            interactive=True,
+        )
+
+        self.strength_slider = Slider(
+            minimum=0, maximum=1, value=1, step=0.1, label="Strength", interactive=True
+        )
 
         self.positive_prompt_textbox = Textbox(
             value="painting of a mountain landscape with a meadow and a forest, meadow background, anime countryside landscape, anime nature wallpap, anime landscape wallpaper, studio ghibli landscape, anime landscape, mountain behind meadow, anime background art, studio ghibli environment, background of flowery hill, anime beautiful peace scene, forrest background, anime scenery, landscape background, background art, anime scenery concept art",
             max_lines=300,
             label="Positive Prompt",
         )
-        self.main_column.add(self.positive_prompt_textbox)
 
         self.negative_prompt_textbox = Textbox(
             value="blurry, shadow polaroid photo, scary angry pose, worn decay texture, portrait fashion model, piercing stare, bruised face, demoness",
             max_lines=300,
             label="Negative Prompt",
         )
-        self.main_column.add(self.negative_prompt_textbox)
 
         self.generate_button = Button(value="Generate")
-        self.main_column.add(self.generate_button)
 
         self.pipe = StableDiffusionDiffImg2ImgPipeline.from_pretrained(
             "stabilityai/stable-diffusion-2-1-base",
@@ -66,13 +85,31 @@ class GenerateTab:
         )
 
     def render(self) -> None:
-        self.input_image.render()
+        with self.parameter_column:
+            self.guidance_scale_slider.render()
+            self.number_of_steps_slider.render()
+            self.strength_slider.render()
+
+        with self.config_row:
+            self.input_image.render()
+            self.parameter_column.render()
+
+        self.config_row.render()
         self.positive_prompt_textbox.render()
         self.negative_prompt_textbox.render()
         self.generate_button.render()
 
     def attach_event(self, mask_image, result_image) -> None:
-        def generate_image(map_image, input_image, positive_prompt, negative_prompt):
+
+        def generate_image(
+            map_image,
+            input_image,
+            guidance_scale,
+            inference_steps,
+            strength,
+            positive_prompt,
+            negative_prompt,
+        ):
             processed_mask_image = preprocess_map(pil_image.fromarray(map_image))
             processed_input_image = preprocess_image(pil_image.fromarray(input_image))
 
@@ -82,7 +119,9 @@ class GenerateTab:
                 num_images_per_prompt=1,
                 negative_prompt=[negative_prompt],
                 map=processed_mask_image,
-                num_inference_steps=100,
+                num_inference_steps=inference_steps,
+                guidance_scale=guidance_scale,
+                strength=strength,
             ).images[0]
 
         self.generate_button.click(
@@ -90,6 +129,9 @@ class GenerateTab:
             inputs=[
                 mask_image,
                 self.input_image,
+                self.guidance_scale_slider,
+                self.number_of_steps_slider,
+                self.strength_slider,
                 self.positive_prompt_textbox,
                 self.negative_prompt_textbox,
             ],
