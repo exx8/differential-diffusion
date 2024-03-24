@@ -7,6 +7,30 @@ from tabs.image_mask_tab import ImageMaskTab
 from tabs.generate_tab import GenerateTab
 from tabs.extract_depth_tab import ExtractDepthTab
 
+from importlib.util import find_spec
+
+
+def check_package(package_name: str) -> None:
+    if find_spec(package_name):
+        print(f"/_\ {package_name} is found")
+    else:
+        print(
+            f"/_\ {package_name} is not found. Please install the {package_name} with pip"
+        )
+        exit(1)
+
+
+print(" Differential Diffusion Gradio Example ".center(100, "-"))
+print("/_\ Checking Packages")
+
+check_package("diffusers")
+check_package("transformers")
+check_package("accelerate")
+check_package("torch")
+check_package("gradio")
+
+print("/_\ Launching example")
+
 gradient_tab = GradientTab()
 image_mask_tab = ImageMaskTab()
 extract_depth_tab = ExtractDepthTab()
@@ -26,8 +50,9 @@ with Blocks() as example:
         with Tab("Generate") as tab_generate:
             generate_tab.render()
 
-        with Row():
+        with Column():
             mask_image = Image(
+                value=gradient_calculate(512, 512, 1.0, 1.0, 1.0, False, False, False),
                 sources=None,
                 label="Mask Image",
                 width=512,
@@ -85,6 +110,7 @@ with Blocks() as example:
     image_mask_tab.attach_event(mask_image)
     extract_depth_tab.attach_event(mask_image)
     generate_tab.attach_event(mask_image, output_image)
+
 
 if __name__ == "__main__":
     example.launch()

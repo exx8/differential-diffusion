@@ -16,14 +16,17 @@ class ExtractDepthTab:
         self.wanted_image = Image(
             sources=["upload", "clipboard"],
             type="pil",
-            width=256,
-            height=256,
+            width=512,
+            height=512,
             label="Input Image",
         )
 
+        from os.path import join
+
         self.extracted_depth_image = Image(
-            width=256,
-            height=256,
+            value=pil_image.open(join("assets", "map2.jpg")),
+            width=512,
+            height=512,
             type="pil",
             label="Extracted Depth Image",
             sources=None,

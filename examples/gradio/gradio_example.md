@@ -6,7 +6,7 @@
 - Generate gradient mask on runtime.
 - Import the mask image.
 - Extract the depth image from the given image with [Intel/dpt-large](https://huggingface.co/Intel/dpt-large) model.
-- Brightness, contrast and image transform functionalities for the above mask images.
+- Brightness, contrast and image transform functionalities for the mask images.
 - Generate output with input image, positive and negative prompts, guidance scale, strength, number of inference steps parameters.
 
 ## Required Packages
@@ -41,7 +41,7 @@
 |      To Vertical      | Rotate the gradient mask image 90 degrees clockwise |
 |     Flip Vertical     | Flip the gradient mask image vertically             |
 
-- ```Mask Image``` ,can be seen on the right, is updated when any variable ,except ```Gradient Mask```, value is changed
+- ```Mask Image``` is updated when any variable ,except ```Gradient Mask```, value is changed
 
 ### Image Mask
 
@@ -56,7 +56,7 @@
 |   To Vertical    | Rotate the input mask image 90 degrees clockwise             |
 |  Flip Vertical   | Flip the input mask image vertically                         |
 
-- ```Mask Image``` ,can be seen on the right, is updated when any variable value is changed
+- ```Mask Image``` is updated when any variable value is changed
 
 ### Extract Depth
 
@@ -72,7 +72,7 @@
 |      To Vertical      | Rotate the extracted depth image 90 degrees clockwise   |
 |     Flip Vertical     | Flip the extracted depth image vertically               |
 
-- ```Mask Image``` ,can be seen on the right, is updated when any variable ,except ```Extracted Depth Image```, value is changed
+- ```Mask Image``` is updated when any variable ,except ```Extracted Depth Image```, value is changed
 
 ### Generate
 
