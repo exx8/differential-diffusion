@@ -17,7 +17,7 @@
 - gradio
 
 ## Usage
-1. Go to main directory
+1. Go to ```differential-diffusion``` directory
 2. Active the virtual environment if there is one
 3. Run ```python examples/gradio/main.py``` command
 
